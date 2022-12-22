@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\Furaffinity.Client.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DocumentationFile>bin\Release\Furaffinity.Client.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Api\IFileUploadApi.cs" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="Furaffinity.Client.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    </ItemGroup>
+
+</Project>
