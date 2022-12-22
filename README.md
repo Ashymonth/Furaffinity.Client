@@ -12,5 +12,5 @@ For secure actions you need to provide auth cookie from site.
   * Get submisssion statictic
   * Get categories
   
-- ISubmissionResource
+- IGalleryResource
   * Get submission idss from gallery page
