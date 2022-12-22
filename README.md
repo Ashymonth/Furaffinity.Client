@@ -13,6 +13,4 @@ For secure actions you need to provide auth cookie from site.
   * Get categories
   
 - ISubmissionResource
-  * Fav submisson
-  * Get submisssion statictic
-  * Get categories
+  * Get submission idss from gallery page
