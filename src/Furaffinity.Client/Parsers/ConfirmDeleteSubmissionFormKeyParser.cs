@@ -6,6 +6,8 @@ internal class ConfirmDeleteSubmissionFormKeyParser
 {
     public string GetFormKey(string page)
     {
+        ErrorParser.ValidatePage(page);
+        
         var document = new HtmlDocument();
         document.LoadHtml(page);
 

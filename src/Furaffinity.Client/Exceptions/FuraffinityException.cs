@@ -17,7 +17,7 @@ public class FuraffinityException : Exception
     /// Create a new instance of <see cref="FuraffinityException"/>
     /// </summary>
     /// <param name="message">Exception message.</param>
-    protected FuraffinityException(string message) : base(message)
+    public FuraffinityException(string message) : base(message)
     {
         
     }

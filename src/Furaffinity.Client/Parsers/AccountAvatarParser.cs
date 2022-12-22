@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Furaffinity.Client.Exceptions;
+using HtmlAgilityPack;
 
 namespace Furaffinity.Client.Parsers;
 
@@ -14,6 +15,6 @@ internal class AccountAvatarParser
             .FirstOrDefault(node => node.HasClass("user-nav-avatar"))
             ?.GetAttributeValue("src", string.Empty);
 
-        return result ?? string.Empty;
+        return result ?? throw new FuraffinityException("Unable to get avatar link");
     }
 }

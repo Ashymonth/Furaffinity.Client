@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Furaffinity.Client.Exceptions;
+using HtmlAgilityPack;
 
 namespace Furaffinity.Client.Parsers;
 
@@ -20,6 +21,8 @@ internal class AccountGalleryParser
             .FirstOrDefault()
             ?.GetAttributeValue("href", string.Empty);
 
-        return result is not null ? result.Split('/')[2] : string.Empty;
+        return result is not null
+            ? result.Split('/')[2]
+            : throw new FuraffinityException("Unable to get submission id");
     }
 }

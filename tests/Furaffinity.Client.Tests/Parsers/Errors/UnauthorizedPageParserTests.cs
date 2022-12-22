@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Furaffinity.Client.Exceptions;
-using Furaffinity.Client.Parsers.Errors;
+using Furaffinity.Client.Parsers;
 using Xunit;
 
 namespace Furaffinity.Client.Tests.Parsers.Errors;
@@ -14,10 +14,8 @@ public class UnauthorizedPageParserTests
         const string path = "TestData\\UnauthorizedPage.html";
 
         var unauthorizedPage = await File.ReadAllTextAsync(path);
-        
-        var parser = new UnauthorizedPageParser();
 
-        Assert.Throws<AuthorizationCookieException>(() => parser.ValidatePage(unauthorizedPage));
+        Assert.Throws<FuraffinityException>(() => ErrorParser.ValidatePage(unauthorizedPage));
     }
 
     [Fact]
@@ -26,9 +24,7 @@ public class UnauthorizedPageParserTests
         const string path = "TestData\\AccountSubmisssionsManagePage.html";
 
         var unauthorizedPage = await File.ReadAllTextAsync(path);
-        
-        var parser = new UnauthorizedPageParser();
 
-        parser.ValidatePage(unauthorizedPage);
+        ErrorParser.ValidatePage(unauthorizedPage);
     }
 }

@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Furaffinity.Client.Exceptions;
+using HtmlAgilityPack;
 
 namespace Furaffinity.Client.Parsers;
 
@@ -35,6 +36,6 @@ internal class FavLinkParser
             .FirstOrDefault()
             ?.GetAttributeValue("href", string.Empty);
 
-        return result ?? string.Empty;
+        return result ?? throw new FuraffinityException("Unable to get fav link");
     }
 }
