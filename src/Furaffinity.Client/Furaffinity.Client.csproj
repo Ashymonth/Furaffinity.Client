@@ -4,6 +4,13 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Title>FuraffinityClinet</Title>
+        <Description>Client to invoke actionis on furaffinity.net</Description>
+        <PackageProjectUrl>https://github.com/Ashymonth/Furaffinity.Client</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Ashymonth/Furaffinity.Client</RepositoryUrl>
+        <PackageTags>api;client;furaffinity</PackageTags>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <Version>1.0.0.2</Version>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -14,10 +21,6 @@
       <DocumentationFile>bin\Release\Furaffinity.Client.xml</DocumentationFile>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Compile Remove="Api\IFileUploadApi.cs" />
-    </ItemGroup>
-    
     <ItemGroup>
         <InternalsVisibleTo Include="Furaffinity.Client.Tests" />
     </ItemGroup>

@@ -58,6 +58,10 @@ public static class ServiceCollectionExtensions
 
     private static void AddAccountResource(IServiceCollection services)
     {
+        AddSubmissionUploadActions(services);
+
+        AddSubmissionDeleteActions(services);
+        
         services.AddScoped<IAccountResource, AccountResource>(provider =>
         {
             var defaultClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient(DefaultClientName);
@@ -77,8 +81,6 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddSubmissionResource(IServiceCollection services)
     {
-        AddSubmissionUploadActions(services);
-
         AddSubmissionsDetailsActions(services);
 
         AddFavActions(services);
@@ -132,6 +134,15 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ISubmissionUploadAction, FinalizeSubmissionsAction>(provider =>
             new FinalizeSubmissionsAction(GetCookieClient(provider)));
+    }
+
+    private static void AddSubmissionDeleteActions(IServiceCollection services)
+    {
+        services.AddScoped<ISubmissionDeleteAction, DeleteSubmissionAction>(provider =>
+            new DeleteSubmissionAction(GetCookieClient(provider)));
+
+        services.AddScoped<ISubmissionDeleteAction, ConfirmDeleteSubmissionAction>(provider =>
+            new ConfirmDeleteSubmissionAction(GetCookieClient(provider)));
     }
 
     private static HttpClient GetCookieClient(IServiceProvider provider) =>
