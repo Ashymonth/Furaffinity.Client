@@ -22,11 +22,13 @@ internal class FinalizeSubmissionsAction : ISubmissionUploadAction
         
         using var response = await _httpClient.SendAsync(request.RequestMessage, ct);
 
-        var imagePage = await response.Content.ReadAsStringAsync(ct);
+        var submissionPage = await response.Content.ReadAsStringAsync(ct);
+        
+        ErrorParser.ValidatePage(submissionPage);
 
         var parser = new SubmissionIdParser();
 
         //ensure, that submission uploaded and we redirected to it. 
-        context.SubmissionId = parser.GetSubmissionId(imagePage);
+        context.SubmissionId = parser.GetSubmissionId(submissionPage);
     }
 }

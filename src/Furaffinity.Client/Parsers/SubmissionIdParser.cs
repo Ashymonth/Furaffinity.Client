@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Furaffinity.Client.Exceptions;
+using HtmlAgilityPack;
 
 namespace Furaffinity.Client.Parsers;
 
@@ -16,6 +17,6 @@ internal class SubmissionIdParser
             .Split("/", StringSplitOptions.RemoveEmptyEntries)
             .LastOrDefault();
 
-        return result ?? string.Empty;
+        return result ?? throw new FuraffinityException("Unable to get submission id");
     }
 }

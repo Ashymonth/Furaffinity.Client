@@ -7,6 +7,8 @@ internal class FormKeyParser
 {
     public string GetFormKey(string page)
     {
+        ErrorParser.ValidatePage(page);
+        
         var document = new HtmlDocument();
         document.LoadHtml(page);
 
@@ -24,7 +26,6 @@ internal class FormKeyParser
                 ?.GetAttributeValue("value", string.Empty);
         }
 
-
-        return formKey ?? throw new AuthorizationCookieException("Cookie are invalid. You need to update account info");
+        return formKey ?? throw new FuraffinityException("Unable to get form key");
     }
 }

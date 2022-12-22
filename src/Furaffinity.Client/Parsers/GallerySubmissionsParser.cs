@@ -1,4 +1,5 @@
-﻿using Furaffinity.Client.Models;
+﻿using Furaffinity.Client.Exceptions;
+using Furaffinity.Client.Models;
 using HtmlAgilityPack;
 
 namespace Furaffinity.Client.Parsers;
@@ -26,7 +27,7 @@ internal class GallerySubmissionsParser
 
             // /view/12345678/ - start from last submission id number 8 (length - 1)
             var submissionId = submissionLink?.Substring(submissionLink.Length - 1 - SubmissionId.MaxLength,
-                SubmissionId.MaxLength) ?? string.Empty;
+                SubmissionId.MaxLength) ?? throw new FuraffinityException("Unable to get submission id");
 
             result.Add(submissionId);
         }

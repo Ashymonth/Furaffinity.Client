@@ -1,5 +1,5 @@
 ﻿using Furaffinity.Client.Handlers;
-using Furaffinity.Client.Parsers.Errors;
+using Furaffinity.Client.Parsers;
 using Furaffinity.Client.Resources;
 using Furaffinity.Client.SubmissionActions.SubmissionDeleteActions;
 using Furaffinity.Client.SubmissionActions.SubmissionDetailsActions;
@@ -30,9 +30,9 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient(DefaultClientName, client => client.BaseAddress = new Uri(BaseAddress));
         services.AddHttpClient(CookieClientName, client => client.BaseAddress = new Uri(BaseAddress))
             .ConfigurePrimaryHttpMessageHandler(provider =>
-                new CookieHandler(provider.GetRequiredService<UnauthorizedPageParser>()));
+                new CookieHandler(provider.GetRequiredService<ErrorParser>()));
 
-        services.AddSingleton<UnauthorizedPageParser>();
+        services.AddSingleton<ErrorParser>();
 
         AddSubmissionResource(services);
 

@@ -1,14 +1,14 @@
 ﻿using Furaffinity.Client.Exceptions;
 using Furaffinity.Client.Extensions;
-using Furaffinity.Client.Parsers.Errors;
+using Furaffinity.Client.Parsers;
 
 namespace Furaffinity.Client.Handlers;
 
 internal class CookieHandler : DelegatingHandler
 {
-    private readonly UnauthorizedPageParser _pageParser;
+    private readonly ErrorParser _pageParser;
     
-    public CookieHandler(UnauthorizedPageParser pageParser)
+    public CookieHandler(ErrorParser pageParser)
     {
         _pageParser = pageParser;
         InnerHandler = new HttpClientHandler();
@@ -36,7 +36,7 @@ internal class CookieHandler : DelegatingHandler
         var page = await response.Content.ReadAsStringAsync(cancellationToken);
 
         //check, that provided cookie are valid and we pass auth.
-        _pageParser.ValidatePage(page);
+        ErrorParser.ValidatePage(page);
 
         return response;
     }
