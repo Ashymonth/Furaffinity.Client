@@ -9,7 +9,7 @@ internal class DeleteSubmissionRequest : IDisposable
     {
         var content = new FormUrlEncodedContent(new[]
         {
-            new KeyValuePair<string, string>("submissions_ids[]", submissionId.Value),
+            new KeyValuePair<string, string>("submission_ids[]", submissionId.Value),
             new KeyValuePair<string, string>("delete_submissions_submit", "1")
         });
 
