@@ -53,7 +53,7 @@ public class AccountResourceTests
     [Fact]
     public async Task UploadSubmissionTest_Should_Upload_Submission()
     {
-        const string expectedSubmissionId = "37238975";
+        const string expectedSubmissionId = "50515362";
         const string testCookie = "cookie";
         const string testFormKey = "ff72a266ce57b1cc4aae8dc8e2941e4524284a88";
 

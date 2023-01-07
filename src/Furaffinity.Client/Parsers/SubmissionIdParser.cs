@@ -10,13 +10,13 @@ internal class SubmissionIdParser
         var document = new HtmlDocument();
         document.LoadHtml(page);
 
-        var result = document.GetElementbyId("responsebox")
+        var result = document.DocumentNode
             .Descendants("form")
+            .FirstOrDefault(node => node.GetAttributeValue("class", string.Empty) == "postlink link-button")
+            ?.Descendants("input")
             .FirstOrDefault()
-            ?.GetAttributeValue("action", string.Empty)
-            .Split("/", StringSplitOptions.RemoveEmptyEntries)
-            .LastOrDefault();
+            ?.GetAttributeValue("value", string.Empty);
 
-        return result ?? throw new FuraffinityException("Unable to get submission id");
+        return result ?? throw new FuraffinityException("Unable to get submission id after upload submission");
     }
 }

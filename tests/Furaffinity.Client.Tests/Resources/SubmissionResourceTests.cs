@@ -62,8 +62,8 @@ public class SubmissionResourceTests
     public async Task FavSubmissionAsyncTest_Should_Fav_Submission()
     {
         const string testsCookie = "test";
-        const string testSubmissionId = "50256309";
-        const string testFavUrl = "fav/37238975/?key=9c2e30fdc83bbf0b9f855a97ecb2ec7f9cfc51ac";
+        const string testSubmissionId = "50515362";
+        const string testFavUrl = "fav/50515362/?key=dc84d83f2c4cfdda1ea6cdc554eb638aafd186e3";
 
         var fakeSubmissionPage = await File.ReadAllTextAsync("TestData\\ImagePage.html");
         var fakeFavedSubmissionPage = await File.ReadAllTextAsync("TestData\\FavedSubmission.html");

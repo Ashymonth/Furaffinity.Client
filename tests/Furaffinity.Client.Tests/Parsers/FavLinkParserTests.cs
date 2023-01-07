@@ -17,6 +17,6 @@ public class FavLinkParserTests
 
         var actual = parser.GetFavLink(page);
 
-        Assert.Equal("/fav/37238975/?key=9c2e30fdc83bbf0b9f855a97ecb2ec7f9cfc51ac", actual);
+        Assert.Equal("/fav/50515362/?key=dc84d83f2c4cfdda1ea6cdc554eb638aafd186e3", actual);
     }
 }
