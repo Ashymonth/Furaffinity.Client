@@ -3,11 +3,11 @@
 /// <summary>
 /// Submission title wrapper.
 /// </summary>
-public class Title
+public class Title : IEqualityComparer<Title>
 {
     private const int TitleMaxLength = 512;
     
-    internal Title(string? title)
+    internal Title(string title)
     {
         if (string.IsNullOrWhiteSpace(title))
         {
@@ -26,4 +26,20 @@ public class Title
     /// Title value.
     /// </summary>
     public string Value { get;  }
+
+    /// <inheritdoc />
+    public bool Equals(Title? x, Title? y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (ReferenceEquals(x, null)) return false;
+        if (ReferenceEquals(y, null)) return false;
+        if (x.GetType() != y.GetType()) return false;
+        return x.Value == y.Value;
+    }
+
+    /// <inheritdoc />
+    public int GetHashCode(Title obj)
+    {
+        return obj.Value.GetHashCode();
+    }
 }

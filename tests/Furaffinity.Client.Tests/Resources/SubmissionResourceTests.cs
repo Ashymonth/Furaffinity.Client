@@ -4,6 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Furaffinity.Client.Constants;
+using Furaffinity.Client.Contracts;
+using Furaffinity.Client.Exceptions;
 using Furaffinity.Client.Models;
 using Furaffinity.Client.Resources;
 using Furaffinity.Client.SubmissionActions.SubmissionDetailsActions;
@@ -51,7 +54,7 @@ public class SubmissionResourceTests
         };
 
         var submissionResource = new SubmissionResource(actions.OrderBy(action => action.Order).ToArray(),
-            Array.Empty<IFavAction>(), mockedClient);
+            Array.Empty<IFavAction>(), new DownloadClient(mockedClient), mockedClient);
 
         var actual = await submissionResource.GetCategoriesAsync(testsCookie);
 
@@ -62,8 +65,8 @@ public class SubmissionResourceTests
     public async Task FavSubmissionAsyncTest_Should_Fav_Submission()
     {
         const string testsCookie = "test";
-        const string testSubmissionId = "50515362";
-        const string testFavUrl = "fav/50515362/?key=dc84d83f2c4cfdda1ea6cdc554eb638aafd186e3";
+        const string testSubmissionId = "50608865";
+        const string testFavUrl = "fav/50608865/?key=7a1e52fd72fdf54776c749bf47895a38b454b2c7";
 
         var fakeSubmissionPage = await File.ReadAllTextAsync("TestData\\ImagePage.html");
         var fakeFavedSubmissionPage = await File.ReadAllTextAsync("TestData\\FavedSubmission.html");
@@ -82,7 +85,7 @@ public class SubmissionResourceTests
         {
             new GetFavLink(mockClient),
             new FavSubmissionAction(mockClient)
-        }, mockClient);
+        }, new DownloadClient(mockClient), mockClient);
 
         var actual = await submissionResource.FavSubmissionAsync(testsCookie, new SubmissionId(testSubmissionId));
 
@@ -101,7 +104,7 @@ public class SubmissionResourceTests
         const string testSubmissionUrl = $"view/{testSubmissionId}";
 
         var testSubmissionPage = await File.ReadAllTextAsync("TestData\\FavedSubmission.html");
-        
+
         var mock = new Mock<HttpMessageHandler>();
 
         mock.SetupRequest(HttpMethod.Get, $"{Constants.BaseUrl}/{testSubmissionUrl}/")
@@ -110,14 +113,87 @@ public class SubmissionResourceTests
         var mockedClient = mock.CreateClientWithBaseUrl();
 
         var resource = new SubmissionResource(Array.Empty<ISubmissionDetailsAction>(), Array.Empty<IFavAction>(),
-            mockedClient);
-        
+            new DownloadClient(mockedClient), mockedClient);
+
         var actual = await resource.GetSubmissionsStatisticAsync(new SubmissionId(testSubmissionId));
-        
+
         Assert.Equal(expectedViews, actual.Views);
         Assert.Equal(expectedFavorites, actual.Favorites);
         Assert.Equal(expectedComments, actual.Comments);
         Assert.Equal(expectedNumberOfComments, actual.UserComments.Count);
+    }
+
+    [Fact]
+    public async Task GetSubmissionTest_Should_Return_Submission()
+    {
+        var expectedUploadFile =
+            new UploadFile(SubmissionTypeName.Artwork, "1673727349.u15vier_снег.jpg", new byte[] {1, 2, 3});
+
+        var expected = Submission.CreateBuilder()
+            .SetTitle("YCH (open)")
+            .SetKeywords("ych snow blue")
+            .SetRating("General")
+            .SetCategory("ych / sale")
+            .SetFile(expectedUploadFile)
+            .SetFolderName("Open YCHs")
+            .SetTheme("All")
+            .SetSpecies("unspecified / any")
+            .SetGender("Any")
+            .PutInScraps(PutInScrap.Disabled())
+            .Build();
         
+        const string fakeSubmissionFileUrl =
+            "https://d.furaffinity.net/art/u15vier/1673727349/1673727349.u15vier_снег.jpg";
+        
+        const string fakeSubmissionId = "12345678";
+        
+        var fakeSubmissionPage = await File.ReadAllTextAsync("TestData\\ImagePage.html");
+        
+        var primaryClientMock = new Mock<HttpMessageHandler>();
+
+        primaryClientMock.SetupRequest(HttpMethod.Get, $"{Constants.BaseUrl}/view/{fakeSubmissionId}/")
+            .ReturnsResponse(HttpStatusCode.OK, new StringContent(fakeSubmissionPage));
+
+        var downloadClientMock = new Mock<HttpMessageHandler>();
+        
+        downloadClientMock.SetupRequest(HttpMethod.Get, fakeSubmissionFileUrl)
+            .ReturnsResponse(expectedUploadFile.Data);
+        
+        var mockClient = primaryClientMock.CreateClientWithBaseUrl();
+
+        var submissionResource = new SubmissionResource(Array.Empty<ISubmissionDetailsAction>(), new IFavAction[]
+        {
+            new GetFavLink(mockClient),
+            new FavSubmissionAction(mockClient)
+        }, new DownloadClient(downloadClientMock.CreateClient()), mockClient);
+
+        var actual = await submissionResource.GetSubmissionById(new SubmissionId(fakeSubmissionId));
+
+        Assert.Equivalent(expected, actual);
+    }
+
+    [Fact]
+    public async Task GetSubmissionTest_Should_Throw_Submission_Not_Found_Exception()
+    {
+        const string fakeSubmissionId = "12345678";
+        
+        var fakeSubmissionNotFoundPage = await File.ReadAllTextAsync("TestData\\SubmissionNotFoundPage.html");
+
+        var primaryClientMock = new Mock<HttpMessageHandler>();
+
+        primaryClientMock.SetupRequest(HttpMethod.Get, $"{Constants.BaseUrl}/view/{fakeSubmissionId}/")
+            .ReturnsResponse(HttpStatusCode.OK, new StringContent(fakeSubmissionNotFoundPage));
+        
+        var mockClient = primaryClientMock.CreateClientWithBaseUrl();
+
+        var submissionResource = new SubmissionResource(Array.Empty<ISubmissionDetailsAction>(), new IFavAction[]
+        {
+            new GetFavLink(mockClient),
+            new FavSubmissionAction(mockClient)
+        }, new DownloadClient(mockClient), mockClient);
+
+        await Assert.ThrowsAsync<SubmissionNotFoundException>(() =>
+            submissionResource.GetSubmissionById(new SubmissionId(fakeSubmissionId)));
+
     }
 }

@@ -3,7 +3,7 @@
 /// <summary>
 /// Submission category wrapper.
 /// </summary>
-public class Category
+public class Category : IEqualityComparer<Category>
 {
     private const string ExceptionTemplate = "Category: {0} not valid category";
 
@@ -41,7 +41,7 @@ public class Category
         {"ych / sale", "30"},
     };
 
-    internal Category(string? categoryName)
+    internal Category(string categoryName)
     {
         if (string.IsNullOrWhiteSpace(categoryName))
         {
@@ -60,4 +60,20 @@ public class Category
     /// Category id.
     /// </summary>
     public string CategoryId { get; }
+
+    /// <inheritdoc />
+    public bool Equals(Category? x, Category? y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (ReferenceEquals(x, null)) return false;
+        if (ReferenceEquals(y, null)) return false;
+        if (x.GetType() != y.GetType()) return false;
+        return x.CategoryId == y.CategoryId;
+    }
+
+    /// <inheritdoc />
+    public int GetHashCode(Category obj)
+    {
+        return obj.CategoryId.GetHashCode();
+    }
 }

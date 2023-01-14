@@ -3,12 +3,13 @@
 /// <summary>
 /// Submission species wrapper.
 /// </summary>
-public class Species
+public class Species : IEqualityComparer<Species>
 {
     private const string ExceptionTemplate = "Species: {0} not valid species";
     
     private static readonly Dictionary<string, string> SpeciesNameToIdMap = new()
     {
+        {"unspecified / any", "1"},
         {"aardvark", "14001"},
         {"aardwolf", "14002"},
         {"aeromorph", "11001"},
@@ -399,7 +400,7 @@ public class Species
         {"zorgoia", "11008"},
     };
 
-    internal Species(string? speciesName)
+    internal Species(string speciesName)
     {
         if (string.IsNullOrWhiteSpace(speciesName))
         {
@@ -418,4 +419,20 @@ public class Species
     /// Species id.
     /// </summary>
     public string SpeciesId { get; }
+
+    /// <inheritdoc />
+    public bool Equals(Species? x, Species? y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (ReferenceEquals(x, null)) return false;
+        if (ReferenceEquals(y, null)) return false;
+        if (x.GetType() != y.GetType()) return false;
+        return x.SpeciesId == y.SpeciesId;
+    }
+
+    /// <inheritdoc />
+    public int GetHashCode(Species obj)
+    {
+        return obj.SpeciesId.GetHashCode();
+    }
 }

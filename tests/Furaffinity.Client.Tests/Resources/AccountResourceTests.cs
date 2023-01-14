@@ -55,11 +55,11 @@ public class AccountResourceTests
     {
         const string expectedSubmissionId = "50515362";
         const string testCookie = "cookie";
-        const string testFormKey = "ff72a266ce57b1cc4aae8dc8e2941e4524284a88";
+        const string testFormKey = "25f930adb69bb771d5d3bc857e4ccd42f65394a9";
 
         var fakeUploadPage = await File.ReadAllTextAsync("TestData\\UploadSubmissionPage.html");
         var fakeFinalizePage = await File.ReadAllTextAsync("TestData\\FinalizeSubmissionPage.html");
-        var fakeSubmissionPage = await File.ReadAllTextAsync("TestData\\ImagePage.html");
+        var fakeSubmissionPage = await File.ReadAllTextAsync("TestData\\SubmissionPageAfterUpload.html");
 
         var expectedSubmission = Submission.CreateBuilder()
             .SetTitle("test title")

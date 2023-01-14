@@ -41,6 +41,11 @@ public static class ServiceCollectionExtensions
         AddAccountResource(services);
 
         services.AddScoped<IFuraffinityClient, FuraffinityClient>();
+        services.AddScoped<IDownloadClient, DownloadClient>(provider =>
+        {
+            var factory = provider.GetRequiredService<IHttpClientFactory>();
+            return new DownloadClient(factory.CreateClient(DownloadClientName));
+        });
 
         return services;
     }
@@ -97,7 +102,7 @@ public static class ServiceCollectionExtensions
 
             var defaultClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient(DefaultClientName);
 
-            var resource = new SubmissionResource(detailsActions, favActions, defaultClient);
+            var resource = new SubmissionResource(detailsActions, favActions, new DownloadClient(defaultClient), defaultClient);
 
             return resource;
         });

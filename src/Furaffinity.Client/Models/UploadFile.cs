@@ -5,7 +5,7 @@ namespace Furaffinity.Client.Models;
 /// <summary>
 /// Submission file.
 /// </summary>
-public class UploadFile : IFile
+public class UploadFile : IFile, IEqualityComparer<UploadFile>
 {
     private const long MaxFileSizeInBytes = 10485760;
 
@@ -29,7 +29,7 @@ public class UploadFile : IFile
         {SubmissionTypeName.Music.ToLower(), "music"},
     };
 
-    internal UploadFile(string? submissionType, string? fileName, byte[]? data)
+    internal UploadFile(string submissionType, string fileName, byte[] data)
     {
         if (string.IsNullOrWhiteSpace(submissionType))
         {
@@ -113,5 +113,22 @@ public class UploadFile : IFile
             throw new InvalidOperationException(
                 $"For {submissionType} file type must be: {string.Join(",", allowedExtensions)}");
         }
+    }
+
+    /// <inheritdoc />
+    public bool Equals(UploadFile? x, UploadFile? y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (ReferenceEquals(x, null)) return false;
+        if (ReferenceEquals(y, null)) return false;
+        if (x.GetType() != y.GetType()) return false;
+        return x.SubmissionTypeId == y.SubmissionTypeId && x.FileName == y.FileName && x.Data.Equals(y.Data) &&
+               x.Extension == y.Extension;
+    }
+
+    /// <inheritdoc />
+    public int GetHashCode(UploadFile obj)
+    {
+        return HashCode.Combine(obj.SubmissionTypeId, obj.FileName, obj.Data, obj.Extension);
     }
 }
