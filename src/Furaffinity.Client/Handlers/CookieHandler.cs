@@ -6,11 +6,8 @@ namespace Furaffinity.Client.Handlers;
 
 internal class CookieHandler : DelegatingHandler
 {
-    private readonly ErrorParser _pageParser;
-    
-    public CookieHandler(ErrorParser pageParser)
+    public CookieHandler()
     {
-        _pageParser = pageParser;
         InnerHandler = new HttpClientHandler();
     }
 

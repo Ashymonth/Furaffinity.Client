@@ -1,4 +1,6 @@
 ﻿using Furaffinity.Client.Contracts;
+using Furaffinity.Client.Exceptions;
+using Furaffinity.Client.Extensions;
 using Furaffinity.Client.Models;
 using Furaffinity.Client.Parsers;
 using Furaffinity.Client.RequestContext;
@@ -12,6 +14,16 @@ namespace Furaffinity.Client.Resources;
 /// </summary>
 public interface IAccountResource
 {
+    /// <summary>
+    /// Return true if the auth cookie is 
+    /// </summary>
+    /// <param name="accountName">Account name.</param>
+    /// <param name="cookie">Authentication cookie for account.</param>
+    /// <param name="ct">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+    /// <exception cref="AuthorizationCookieException">If provided auth cookie for account are invalid</exception>
+    /// <returns></returns>
+    Task<bool> VerifyAccountAuthCookie(string accountName, string cookie, CancellationToken ct = default);
+
     /// <summary>
     /// Get account avatar data.
     /// </summary>
@@ -51,7 +63,7 @@ public interface IAccountResource
 internal class AccountResource : IAccountResource
 {
     private readonly HttpClient _requestClient;
-    private readonly HttpClient _downloadClient;
+    private readonly HttpClient _downloadClient; // change to IDownloadClient;
 
     private readonly ISubmissionUploadAction[] _uploadActions;
     private readonly ISubmissionDeleteAction[] _deleteActions;
@@ -65,6 +77,26 @@ internal class AccountResource : IAccountResource
         _downloadClient = downloadClient ?? throw new ArgumentNullException(nameof(downloadClient));
         _uploadActions = uploadActions ?? throw new ArgumentNullException(nameof(uploadActions));
         _deleteActions = deleteActions ?? throw new ArgumentNullException(nameof(deleteActions));
+    }
+
+    public async Task<bool> VerifyAccountAuthCookie(string accountName, string cookie, CancellationToken ct = default)
+    {
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get,$"/stats/{accountName}/submissions/");
+        requestMessage.AddCookie(cookie);
+
+        using var responseMessage = await _requestClient.SendAsync(requestMessage, ct);
+
+        var page = await responseMessage.Content.ReadAsStringAsync(ct);
+        try
+        {
+            ErrorParser.ValidatePage(page);
+
+            return true;
+        }
+        catch (FuraffinityException)
+        {
+            return false;
+        }
     }
 
     public async Task<byte[]> GetAccountAvatarAsync(string accountName, CancellationToken ct = default)

@@ -5,7 +5,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Furaffinity.Client.Constants;
 using Furaffinity.Client.Contracts;
+using Furaffinity.Client.Handlers;
 using Furaffinity.Client.Models;
+using Furaffinity.Client.Parsers;
 using Furaffinity.Client.Requests;
 using Furaffinity.Client.Resources;
 using Furaffinity.Client.SubmissionActions.SubmissionDeleteActions;
@@ -19,6 +21,28 @@ namespace Furaffinity.Client.Tests.Resources;
 
 public class AccountResourceTests
 {
+    [Fact]
+    public async Task VerifyAccountAuthCookieTest_Should_Return_False()
+    {
+        const string fakeAccountName = "testAccount";
+        var service = await PrepareVerifyAccountAuthCookieTest("TestData\\UnauthorizedPage.html", fakeAccountName);
+
+        var actual = await service.VerifyAccountAuthCookie(fakeAccountName, "test");
+
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public async Task VerifyAccountAuthCookieTest_Should_Return_True()
+    {
+        const string fakeAccountName = "testAccount";
+        var service = await PrepareVerifyAccountAuthCookieTest("TestData\\UploadSubmissionPage.html", fakeAccountName);
+
+        var actual = await service.VerifyAccountAuthCookie(fakeAccountName, "test");
+
+        Assert.True(actual);
+    }
+
     [Fact]
     public async Task GetAvatarDataTest_Should_Return_Avatar_Data()
     {
@@ -36,7 +60,7 @@ public class AccountResourceTests
 
         mockHandler.SetupRequest(HttpMethod.Get, parsedLinkToAccountAvatar)
             .ReturnsResponse(HttpStatusCode.OK, new ByteArrayContent(new byte[] {1, 2, 3}));
-        
+
         var requestMockClient = mockHandler.CreateClientWithBaseUrl();
 
         var downloadMockClient = mockHandler.CreateClient();
@@ -89,7 +113,8 @@ public class AccountResourceTests
 
         mockHandler.SetupRequest(HttpMethod.Post, $"{Constants.BaseUrl}/submit/finalize/", async message =>
             {
-                using var testRequest = new FinalizeSubmissionUploadRequest(testCookie, testFormKey, expectedSubmission);
+                using var testRequest =
+                    new FinalizeSubmissionUploadRequest(testCookie, testFormKey, expectedSubmission);
 
                 return await message.CompareRequestsAsync(testRequest.RequestMessage);
             })
@@ -108,7 +133,7 @@ public class AccountResourceTests
 
         Assert.Equal(expectedSubmissionId, actual);
     }
-    
+
     [Fact]
     public async Task DeleteSubmissionTest_Should_Delete_Submission()
     {
@@ -151,5 +176,23 @@ public class AccountResourceTests
         var actual = await resource.DeleteSubmissionAsync(testSubmissionId, testCookie, testPassword);
 
         Assert.True(actual);
+    }
+    
+    private static async Task<AccountResource> PrepareVerifyAccountAuthCookieTest(string fakePage,
+        string fakeAccountName)
+    {
+        var fakeUnauthorizedPage = await File.ReadAllTextAsync(fakePage);
+
+        var mockHandler = new Mock<HttpMessageHandler>();
+        mockHandler.SetupRequest(HttpMethod.Get, $"{Constants.BaseUrl}/stats/{fakeAccountName}/submissions/")
+            .ReturnsResponse(HttpStatusCode.OK, new StringContent(fakeUnauthorizedPage));
+
+        var mockClient = mockHandler.CreateClientWithBaseUrl();
+        var service = new AccountResource(mockClient, mockClient, new ISubmissionUploadAction[]
+        {
+            new GetInitialFormKeyAction(mockClient)
+        }, Array.Empty<ISubmissionDeleteAction>());
+
+        return service;
     }
 }
