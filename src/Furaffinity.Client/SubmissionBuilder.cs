@@ -28,7 +28,7 @@ public class SubmissionBuilder
     /// </summary>
     /// <param name="title">Submission title.</param>
     /// <returns></returns>
-    public SubmissionBuilder SetTitle(string? title)
+    public SubmissionBuilder SetTitle(string title)
     {
         _submission.Title = new Title(title);
         return this;
@@ -70,9 +70,26 @@ public class SubmissionBuilder
     /// <param name="data">File data.</param>
     /// <remarks><see cref="SubmissionTypeName"/></remarks>
     /// <returns></returns>
-    public SubmissionBuilder SetFile(string? submissionType, string? fileName, byte[] data)
+    public SubmissionBuilder SetFile(string submissionType, string fileName, byte[] data)
     {
         _submission.File = new UploadFile(submissionType, fileName, data);
+        return this;
+    }
+    
+    /// <summary>
+    /// Set submission file to upload
+    /// </summary>
+    /// <param name="uploadFile">Submission file <see cref="UploadFile"/></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public SubmissionBuilder SetFile(UploadFile uploadFile)
+    {
+        if (uploadFile is null)
+        {
+            throw new ArgumentNullException(nameof(uploadFile));
+        }
+        
+        _submission.File = uploadFile;
         return this;
     }
 
@@ -82,7 +99,7 @@ public class SubmissionBuilder
     /// <param name="ratingName">Submission rating.</param>
     /// <remarks><see cref="SubmissionRatingName"/></remarks>
     /// <returns></returns>
-    public SubmissionBuilder SetRating(string? ratingName)
+    public SubmissionBuilder SetRating(string ratingName)
     {
         _submission.Rating = new Rating(ratingName);
         return this;
@@ -93,7 +110,7 @@ public class SubmissionBuilder
     /// </summary>
     /// <param name="themeName">Submission theme.</param>
     /// <returns></returns>
-    public SubmissionBuilder SetTheme(string? themeName)
+    public SubmissionBuilder SetTheme(string themeName)
     {
         _submission.Theme = new Theme(themeName);
         return this;
@@ -104,7 +121,7 @@ public class SubmissionBuilder
     /// </summary>
     /// <param name="categoryName">Submission category./</param>
     /// <returns></returns>
-    public SubmissionBuilder SetCategory(string? categoryName)
+    public SubmissionBuilder SetCategory(string categoryName)
     {
         _submission.Category = new Category(categoryName);
         return this;
@@ -115,7 +132,7 @@ public class SubmissionBuilder
     /// </summary>
     /// <param name="genderName">Submission gender.</param>
     /// <returns></returns>
-    public SubmissionBuilder SetGender(string? genderName)
+    public SubmissionBuilder SetGender(string genderName)
     {
         _submission.Gender = new Gender(genderName);
         return this;
@@ -126,7 +143,7 @@ public class SubmissionBuilder
     /// </summary>
     /// <param name="speciesName">Submission species.</param>
     /// <returns></returns>
-    public SubmissionBuilder SetSpecies(string? speciesName)
+    public SubmissionBuilder SetSpecies(string speciesName)
     {
         _submission.Species = new Species(speciesName);
         return this;
@@ -138,7 +155,7 @@ public class SubmissionBuilder
     /// <param name="comments">Submission comment value.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">if comments are null.</exception>
-    public SubmissionBuilder SetComments(Comments? comments)
+    public SubmissionBuilder SetComments(Comments comments)
     {
         if (comments is null)
         {
@@ -155,7 +172,7 @@ public class SubmissionBuilder
     /// <param name="putInScrap">Submission put in scrap value.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">If putInScrap is null.</exception>
-    public SubmissionBuilder PutInScraps(PutInScrap? putInScrap)
+    public SubmissionBuilder PutInScraps(PutInScrap putInScrap)
     {
         if (putInScrap is null)
         {

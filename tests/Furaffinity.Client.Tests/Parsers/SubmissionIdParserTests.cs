@@ -9,7 +9,7 @@ public class SubmissionIdParserTests
     [Fact]
     public void GetSubmissionIdTest()
     {
-        const string path = "TestData\\ImagePage.html";
+        const string path = "TestData\\SubmissionPageAfterUpload.html";
 
         var page = File.ReadAllText(path);
 

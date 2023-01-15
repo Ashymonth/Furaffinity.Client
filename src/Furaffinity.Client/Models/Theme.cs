@@ -3,7 +3,7 @@
 /// <summary>
 /// Submission theme wrapper.
 /// </summary>
-public class Theme
+public class Theme : IEqualityComparer<Theme>
 {
     private const string Template = "Theme: {0} not valid theme";
     
@@ -63,7 +63,7 @@ public class Theme
 
     };
 
-    internal Theme(string? themeName)
+    internal Theme(string themeName)
     {
         if (string.IsNullOrWhiteSpace(themeName))
         {
@@ -82,4 +82,20 @@ public class Theme
     /// Theme identifier.
     /// </summary>
     public string ThemeId { get; }
+
+    /// <inheritdoc />
+    public bool Equals(Theme? x, Theme? y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (ReferenceEquals(x, null)) return false;
+        if (ReferenceEquals(y, null)) return false;
+        if (x.GetType() != y.GetType()) return false;
+        return x.ThemeId == y.ThemeId;
+    }
+
+    /// <inheritdoc />
+    public int GetHashCode(Theme obj)
+    {
+        return obj.ThemeId.GetHashCode();
+    }
 }

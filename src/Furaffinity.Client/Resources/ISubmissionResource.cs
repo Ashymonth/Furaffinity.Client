@@ -38,6 +38,14 @@ public interface ISubmissionResource
     /// <returns></returns>
     Task<Dictionary<string, List<CategoryResponse>>> GetCategoriesAsync(string cookie,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// Get submission info from site by submission id
+    /// </summary>
+    /// <param name="submissionId">Submission identifier</param>
+    /// <param name="ct">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+    /// <returns></returns>
+    Task<Submission> GetSubmissionById(SubmissionId submissionId, CancellationToken ct = default);
 }
 
 /// <summary>
@@ -47,13 +55,18 @@ internal class SubmissionResource : ISubmissionResource
 {
     private readonly ISubmissionDetailsAction[] _detailsActions;
     private readonly IFavAction[] _favActions;
+    private readonly IDownloadClient _downloadClient;
     private readonly HttpClient _httpClient;
 
-    public SubmissionResource(ISubmissionDetailsAction[] detailsActions, IFavAction[] favActions, HttpClient httpClient)
+    public SubmissionResource(ISubmissionDetailsAction[] detailsActions,
+        IFavAction[] favActions,
+        IDownloadClient downloadClient,
+        HttpClient httpClient)
     {
         _detailsActions = detailsActions ?? throw new ArgumentNullException(nameof(detailsActions));
         _favActions = favActions ?? throw new ArgumentNullException(nameof(favActions));
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        _downloadClient = downloadClient ?? throw new ArgumentNullException(nameof(downloadClient));
     }
 
     public async Task<bool> FavSubmissionAsync(string cookie,
@@ -98,5 +111,20 @@ internal class SubmissionResource : ISubmissionResource
         }
 
         return context.SubmissionsDetails;
+    }
+
+    public async Task<Submission> GetSubmissionById(SubmissionId submissionId, CancellationToken ct = default)
+    {
+        using var responseMessage = await _httpClient.GetAsync($"/view/{submissionId.Value}/", ct);
+
+        var page = await responseMessage.Content.ReadAsStringAsync(ct);
+
+        ErrorParser.ValidateSubmissionPage(page);
+        
+        var parser = new SubmissionInfoParser(_downloadClient);
+
+        var result = await parser.GetSubmissionAsync(page);
+
+        return result;
     }
 }

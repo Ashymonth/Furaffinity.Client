@@ -6,7 +6,7 @@ namespace Furaffinity.Client.Models;
 /// <summary>
 /// Submission rating wrapper.
 /// </summary>
-public class Rating
+public class Rating : IEqualityComparer<Rating>
 {
     private const string Template = "Rating: {0} is not valid submission rating";
     
@@ -17,7 +17,7 @@ public class Rating
         {SubmissionRatingName.Adult.ToLower(), "1"},
     };
 
-    internal Rating(string? ratingName)
+    internal Rating(string ratingName)
     {
         if (string.IsNullOrWhiteSpace(ratingName))
         {
@@ -36,4 +36,20 @@ public class Rating
     /// Rating id.
     /// </summary>
     public string RatingId { get; }
+
+    /// <inheritdoc />
+    public bool Equals(Rating? x, Rating? y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (ReferenceEquals(x, null)) return false;
+        if (ReferenceEquals(y, null)) return false;
+        if (x.GetType() != y.GetType()) return false;
+        return x.RatingId == y.RatingId;
+    }
+
+    /// <inheritdoc />
+    public int GetHashCode(Rating obj)
+    {
+        return obj.RatingId.GetHashCode();
+    }
 }

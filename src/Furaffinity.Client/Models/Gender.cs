@@ -3,7 +3,7 @@
 /// <summary>
 /// Submission gender wrapper.
 /// </summary>
-public class Gender
+public class Gender : IEqualityComparer<Gender>
 {
     private const string Template = "Gender: {0} not valid gender";
 
@@ -21,7 +21,7 @@ public class Gender
         {"trans (male)", "8"},
     };
 
-    internal Gender(string? genderName)
+    internal Gender(string genderName)
     {
         if (string.IsNullOrWhiteSpace(genderName))
         {
@@ -40,4 +40,20 @@ public class Gender
     /// Gender id.
     /// </summary>
     public string GenderId { get; }
+
+    /// <inheritdoc />
+    public bool Equals(Gender? x, Gender? y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (ReferenceEquals(x, null)) return false;
+        if (ReferenceEquals(y, null)) return false;
+        if (x.GetType() != y.GetType()) return false;
+        return x.GenderId == y.GenderId;
+    }
+
+    /// <inheritdoc />
+    public int GetHashCode(Gender obj)
+    {
+        return obj.GenderId.GetHashCode();
+    }
 }
