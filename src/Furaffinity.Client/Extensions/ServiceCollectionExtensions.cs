@@ -29,8 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient(DownloadClientName);
         services.AddHttpClient(DefaultClientName, client => client.BaseAddress = new Uri(BaseAddress));
         services.AddHttpClient(CookieClientName, client => client.BaseAddress = new Uri(BaseAddress))
-            .ConfigurePrimaryHttpMessageHandler(provider =>
-                new CookieHandler(provider.GetRequiredService<ErrorParser>()));
+            .ConfigurePrimaryHttpMessageHandler(_ => new CookieHandler());
 
         services.AddSingleton<ErrorParser>();
 

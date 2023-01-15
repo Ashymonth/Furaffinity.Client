@@ -4,8 +4,16 @@ using HtmlAgilityPack;
 
 namespace Furaffinity.Client.Parsers;
 
+/// <summary>
+/// Checking for a possible exception after the site has sent a response.
+/// </summary>
 internal class ErrorParser
 {
+    /// <summary>
+    /// Check page for generic exception that start with <h2>System Message</h2>
+    /// </summary>
+    /// <param name="page"></param>
+    /// <exception cref="FuraffinityException"></exception>
     public static void ValidatePage(string page)
     {
         var document = new HtmlDocument();
@@ -30,6 +38,11 @@ internal class ErrorParser
         }
     }
 
+    /// <summary>
+    /// Validate that submission exist and submission is found.
+    /// </summary>
+    /// <param name="page"></param>
+    /// <exception cref="SubmissionNotFoundException"></exception>
     public static void ValidateSubmissionPage(string page)
     {
         var document = new HtmlDocument();
