@@ -29,6 +29,11 @@ internal class ErrorParser
             ?.FirstOrDefault()
             ?.InnerText;
 
+        if (errorMessage?.Contains("flood") == true)
+        {
+            throw new FloodProtectionException();
+        }
+        
         switch (errorMessage)
         {
             case null:

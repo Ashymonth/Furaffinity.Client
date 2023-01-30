@@ -69,7 +69,7 @@ public class AccountResourceTests
             new AccountResource(requestMockClient, downloadMockClient, Array.Empty<ISubmissionUploadAction>(),
                 Array.Empty<ISubmissionDeleteAction>());
 
-        var actual = await accountResource.GetAccountAvatarAsync(userName);
+        var actual = await accountResource.GetAccountAvatarAsync("Fake cookie", userName);
 
         Assert.Equal(actual, expected);
     }

@@ -68,7 +68,7 @@ public static class ServiceCollectionExtensions
         
         services.AddScoped<IAccountResource, AccountResource>(provider =>
         {
-            var defaultClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient(DefaultClientName);
+            var defaultClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient(CookieClientName);
             var downloadClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient(DownloadClientName);
 
             var uploadActions = provider.GetServices<ISubmissionUploadAction>()

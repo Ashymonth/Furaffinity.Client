@@ -27,10 +27,11 @@ public interface IAccountResource
     /// <summary>
     /// Get account avatar data.
     /// </summary>
+    /// <param name="cookie"></param>
     /// <param name="userName">Account name.</param>
     /// <param name="ct"> A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
     /// <returns></returns>
-    Task<byte[]> GetAccountAvatarAsync(string userName, CancellationToken ct = default);
+    Task<byte[]> GetAccountAvatarAsync(string cookie, string userName, CancellationToken ct = default);
 
     /// <summary>
     /// Upload submission to account.
@@ -62,7 +63,7 @@ public interface IAccountResource
 /// </summary>
 internal class AccountResource : IAccountResource
 {
-    private readonly HttpClient _requestClient;
+    private readonly HttpClient _cookieClient;
     private readonly HttpClient _downloadClient; // change to IDownloadClient;
 
     private readonly ISubmissionUploadAction[] _uploadActions;
@@ -73,7 +74,7 @@ internal class AccountResource : IAccountResource
         ISubmissionUploadAction[] uploadActions,
         ISubmissionDeleteAction[] deleteActions)
     {
-        _requestClient = requestClient ?? throw new ArgumentNullException(nameof(requestClient));
+        _cookieClient = requestClient ?? throw new ArgumentNullException(nameof(requestClient));
         _downloadClient = downloadClient ?? throw new ArgumentNullException(nameof(downloadClient));
         _uploadActions = uploadActions ?? throw new ArgumentNullException(nameof(uploadActions));
         _deleteActions = deleteActions ?? throw new ArgumentNullException(nameof(deleteActions));
@@ -81,10 +82,10 @@ internal class AccountResource : IAccountResource
 
     public async Task<bool> VerifyAccountAuthCookie(string accountName, string cookie, CancellationToken ct = default)
     {
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get,$"/stats/{accountName}/submissions/");
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/stats/{accountName}/submissions/");
         requestMessage.AddCookie(cookie);
 
-        using var responseMessage = await _requestClient.SendAsync(requestMessage, ct);
+        using var responseMessage = await _cookieClient.SendAsync(requestMessage, ct);
 
         var page = await responseMessage.Content.ReadAsStringAsync(ct);
         try
@@ -99,9 +100,11 @@ internal class AccountResource : IAccountResource
         }
     }
 
-    public async Task<byte[]> GetAccountAvatarAsync(string accountName, CancellationToken ct = default)
+    public async Task<byte[]> GetAccountAvatarAsync(string cookie, string accountName, CancellationToken ct = default)
     {
-        using var response = await _requestClient.GetAsync($"/user/{accountName}", ct);
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"/user/{accountName}");
+        request.AddCookie(cookie);
+        using var response = await _cookieClient.SendAsync(request, ct);
 
         var page = await response.Content.ReadAsStringAsync(ct);
 
